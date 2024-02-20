@@ -1,6 +1,8 @@
 {
     "name": "nadylib/leakybucket",
+    "version": "1.0.0",
     "description": "An fiber-based implementation of the LeakyBucket algorithm",
+    "type": "library",
     "authors": [
       {
         "name": "Nadyita",
