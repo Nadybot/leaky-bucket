@@ -31,9 +31,9 @@
     "license": ["AGPL-3.0-or-later"],
     "scripts": {
       "tests": [
-        "phpunit -c phpunit.xml",
-        "phpstan analyse --memory-limit 512M --no-progress --no-ansi -c phpstan.neon",
-        "phpcs --no-colors --report=checkstyle --standard=style/Nadybot/ruleset.xml -q src"
+        "phpunit -c phpunit.xml --no-output",
+        "phpstan analyse --memory-limit 512M --no-ansi -c phpstan.neon -q",
+        "phpcs --no-colors --standard=style/Nadybot/ruleset.xml -q src"
       ]
     }
 }

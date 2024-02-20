@@ -87,27 +87,27 @@ class LeakyBucket {
 				"fill" => $this->fill,
 				"size" => $this->size,
 		]);
-		if (count($this->queue)) {
-			if ($this->queue[0]->amount <= $this->fill) {
-				$this->logger?->debug("{num_consumers} waiting, calling oldest one", [
-					"num_consumers" => count($this->queue),
-				]);
-				$nextItem = array_shift($this->queue);
-				$this->fill -= $nextItem->amount;
-				$callback = $nextItem->callback;
-				if ($callback instanceof Suspension) {
-					$callback->resume();
-				} else {
-					$callback();
-				}
-			} else {
-				$this->logger?->debug("{num_consumers} waiting, oldest one needs {needed}", [
-					"num_consumers" => count($this->queue),
-					"needed" => $this->queue[0]->amount,
-				]);
-			}
-		} elseif ($this->size === $this->fill) {
+		if ($this->size === $this->fill && !count($this->queue)) {
 			$this->stop();
+			return;
+		}
+		if (!count($this->queue)) {
+			return;
+		}
+		$this->logger?->debug("{num_consumers} waiting, oldest one needs {needed}", [
+			"num_consumers" => count($this->queue),
+			"needed" => $this->queue[0]->amount,
+		]);
+		if ($this->queue[0]->amount > $this->fill) {
+			return;
+		}
+		$nextItem = array_shift($this->queue);
+		$this->fill -= $nextItem->amount;
+		$callback = $nextItem->callback;
+		if ($callback instanceof Suspension) {
+			$callback->resume();
+		} else {
+			$callback();
 		}
 	}
 }
