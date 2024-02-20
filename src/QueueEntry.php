@@ -2,12 +2,13 @@
 
 namespace Nadylib\LeakyBucket;
 
+use Closure;
 use Revolt\EventLoop\Suspension;
 
 class QueueEntry {
-	/** @param Suspension<null> $suspension */
+	/** @param Suspension<null> $callback */
 	public function __construct(
-		public readonly Suspension $suspension,
+		public readonly Closure|Suspension $callback,
 		public readonly int $amount
 	) {
 	}

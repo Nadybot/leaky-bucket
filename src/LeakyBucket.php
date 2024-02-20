@@ -4,26 +4,27 @@ namespace Nadylib\LeakyBucket;
 
 use Psr\Log\LoggerInterface;
 use Revolt\EventLoop;
+use Revolt\EventLoop\Suspension;
 
 class LeakyBucket {
-	private int $fill = 0;
+	protected int $fill = 0;
 
 	/** @var QueueEntry[] */
-	private array $queue = [];
+	protected array $queue = [];
 
-	private ?string $cancellationToken = null;
+	protected ?string $cancellationToken = null;
 
-	public function __construct(
+	final public function __construct(
 		public int $size,
 		public float $refillDelay,
 		public int $refillAmount=1,
 		?int $startAmount=null,
-		private ?LoggerInterface $logger=null,
+		protected ?LoggerInterface $logger=null,
 	) {
 		$this->fill = $startAmount ?? $this->size;
 	}
 
-	public function take(int $amount=1): void {
+	public function take(int $amount=1, ?\Closure $callback=null): void {
 		if ($this->fill < $amount) {
 			$this->logger?->debug("Client wants {amount}, bucket has {fill}/{size}, waiting for refill", [
 				"amount" => $amount,
@@ -32,26 +33,32 @@ class LeakyBucket {
 			]);
 			$suspension = EventLoop::getSuspension();
 			$this->queue []= new QueueEntry(
-				suspension: $suspension,
+				callback: $callback ?? $suspension,
 				amount: $amount
 			);
-			$suspension->suspend();
-			$this->logger?->debug("Bucket got {fill}/{size} again, resuming", [
-				"fill" => $this->fill,
-				"size" => $this->size,
-			]);
+			if (!isset($callback)) {
+				$suspension->suspend();
+				$this->logger?->debug("Bucket got {fill}/{size} again, resuming", [
+					"fill" => $this->fill,
+					"size" => $this->size,
+				]);
+			}
+			$this->start();
 		} else {
 			$this->logger?->debug("Client wants {amount}, bucket got {fill}/{size} in it, continuing", [
 				"amount" => $amount,
 				"fill" => $this->fill,
 				"size" => $this->size,
 			]);
+			$this->fill -= $amount;
+			$this->start();
+			if (isset($callback)) {
+				$callback();
+			}
 		}
-		$this->fill -= $amount;
-		$this->start();
 	}
 
-	private function start(): void {
+	protected function start(): void {
 		if (isset($this->cancellationToken)) {
 			return;
 		}
@@ -64,7 +71,7 @@ class LeakyBucket {
 		);
 	}
 
-	private function stop(): void {
+	protected function stop(): void {
 		if (!isset($this->cancellationToken)) {
 			return;
 		}
@@ -73,7 +80,7 @@ class LeakyBucket {
 		$this->cancellationToken = null;
 	}
 
-	private function put(int $refillAmount): void {
+	protected function put(int $refillAmount): void {
 		$this->fill = min($this->size, $this->fill + $refillAmount);
 		$this->logger?->debug("Refilling bucket with {refill_amount}, now at {fill}/{size}", [
 				"refill_amount" => $refillAmount,
@@ -85,7 +92,14 @@ class LeakyBucket {
 				$this->logger?->debug("{num_consumers} waiting, calling oldest one", [
 					"num_consumers" => count($this->queue),
 				]);
-				array_shift($this->queue)->suspension->resume();
+				$nextItem = array_shift($this->queue);
+				$this->fill -= $nextItem->amount;
+				$callback = $nextItem->callback;
+				if ($callback instanceof Suspension) {
+					$callback->resume();
+				} else {
+					$callback();
+				}
 			} else {
 				$this->logger?->debug("{num_consumers} waiting, oldest one needs {needed}", [
 					"num_consumers" => count($this->queue),
