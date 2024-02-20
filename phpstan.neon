@@ -1,0 +1,9 @@
+parameters:
+  level: 7
+  paths:
+    - src
+  parallel:
+    maximumNumberOfProcesses: 6
+  phpVersion: 80300
+includes:
+  - vendor/thecodingmachine/phpstan-safe-rule/phpstan-safe-rule.neon

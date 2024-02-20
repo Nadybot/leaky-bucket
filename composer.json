@@ -1,0 +1,40 @@
+{
+    "name": "nadyita/leakybucket",
+    "description": "An fiber-based implementation of the LeakyBucket algorithm",
+    "authors": [
+      {
+        "name": "Nadyita",
+        "email": "nadyita@hodorraid.org",
+        "homepage": "https://nadybot.org",
+        "role": "Developer"
+      }
+    ],
+    "require": {
+        "php": ">=8.1.17",
+        "revolt/event-loop": "^1.0",
+        "psr/log": "^3.0",
+        "monolog/monolog": "^3.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Nadylib\\LeakyBucket\\": "src",
+            "Nadylib\\LeakyBucket\\Tests\\": "tests"
+        }
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.49",
+        "squizlabs/php_codesniffer": "^3.8",
+        "phpstan/phpstan": "^1.10",
+        "thecodingmachine/phpstan-safe-rule": "^1.2",
+        "phpunit/phpunit": "^10.0",
+        "beste/psr-testlogger": "^1.0"
+    },
+    "license": ["AGPL-3.0-or-later"],
+    "scripts": {
+      "tests": [
+        "phpunit -c phpunit.xml",
+        "phpstan analyse --memory-limit 512M --no-progress --no-ansi -c phpstan.neon",
+        "phpcs --no-colors --report=checkstyle --standard=style/Nadybot/ruleset.xml -q src"
+      ]
+    }
+}
