@@ -30,7 +30,6 @@ for ($i = 1; $i <= 7; $i++) {
 	$bucket->take(1);
 	$time = (new DateTimeImmutable())->format("H:i:s.v");
 	echo("[{$time}] Taken.\n");
-	);
 }
 ```
 
