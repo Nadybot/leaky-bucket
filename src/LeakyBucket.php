@@ -2,6 +2,8 @@
 
 namespace Nadylib\LeakyBucket;
 
+use Closure;
+use Error;
 use Psr\Log\LoggerInterface;
 use Revolt\EventLoop;
 use Revolt\EventLoop\Suspension;
@@ -24,6 +26,30 @@ class LeakyBucket {
 		$this->fill = $startAmount ?? $this->size;
 	}
 
+	/** Get how much is currently in the bucket */
+	public function getFill(): int {
+		return $this->fill;
+	}
+
+	/** Check if we could take $amount without delay */
+	public function canTake(int $amount=1): bool {
+		return $this->fill < $amount;
+	}
+
+	/**
+	 * Try to take out something from the bucket
+	 *
+	 * If there is currently at least $amount in the bucket, immediately return,
+	 * optionally calling $callback if set. If there is not enough in the bucket,
+	 * wait until there is (if $callback is not set), or immediately return, and
+	 * call $callback once there is enough.
+	 *
+	 * @param int          $amount   How much to take
+	 * @param null|Closure $callback If set, a Closure to call back once there
+	 *                               is enough in the bucket and it's our turn
+	 *
+	 * @throws Error
+	 */
 	public function take(int $amount=1, ?\Closure $callback=null): void {
 		if ($this->fill < $amount) {
 			$this->logger?->debug("Client wants {amount}, bucket has {fill}/{size}, waiting for refill", [
@@ -65,9 +91,7 @@ class LeakyBucket {
 		$this->logger?->debug("Starting refill-thread");
 		$this->cancellationToken = EventLoop::repeat(
 			$this->refillDelay,
-			function (string $token): void {
-				$this->put($this->refillAmount);
-			}
+			fn () => $this->put($this->refillAmount)
 		);
 	}
 
