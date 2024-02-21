@@ -32,7 +32,7 @@
     "scripts": {
       "tests": [
         "phpunit -c phpunit.xml --no-output",
-        "phpstan analyse --memory-limit 512M --no-ansi -c phpstan.neon -q",
+        "phpstan analyse --memory-limit 512M --no-ansi -cphpstan.neon --error-format=github --no-progress",
         "phpcs --no-colors --standard=style/Nadybot/ruleset.xml -q src"
       ]
     }
