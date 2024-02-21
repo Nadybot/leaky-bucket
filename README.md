@@ -1,5 +1,7 @@
 # leaky-bucket
 
+[![PHP Tests passing or not](https://github.com/nadybot/leaky-bucket/actions/workflows/php.yml/badge.svg)](https://github.com/Nadybot/leaky-bucket/actions/workflows/php.yml)
+
 An async Leaky Bucket implementation using the Revolt EventLoop
 
 ## Usage
