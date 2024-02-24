@@ -370,4 +370,17 @@
     <rule ref="PSR12.Classes.AnonClassDeclaration"/>
 
     <rule ref="Nadybot.Arrays.DisallowLongArraySyntax"/>
+    <rule ref="Nadybot.Files.TypeNameMatchesFileName">
+      <properties>
+		<property name="rootNamespaces" type="array">
+			<element key="src" value="Nadylib\LeakyBucket"/>
+			<element key="tests" value="Nadylib\LeakyBucket\Tests"/>
+		</property>
+		<property name="skipDirs" type="array">
+			<element value="vendor"/>
+		</property>
+	</properties>
+
+    </rule>
+
 </ruleset>

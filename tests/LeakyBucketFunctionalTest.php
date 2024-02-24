@@ -3,34 +3,12 @@
 namespace Nadylib\LeakyBucket\Tests;
 
 use Nadylib\LeakyBucket\LeakyBucket;
+use PHPUnit\Framework\Attributes\Medium;
 use PHPUnit\Framework\TestCase;
 use Revolt\EventLoop;
 
-final class BucketTest extends TestCase {
-	public function testTakingReducesFill(): void {
-		$bucket = new LeakyBucket(
-			size: 5,
-			refillDelay: 0.01,
-		);
-		$bucket->take();
-		$this->assertSame(4, $bucket->getFill());
-		$bucket->take(2);
-		$this->assertSame(2, $bucket->getFill());
-	}
-
-	public function testNoDelayOnFull(): void {
-		$bucket = new LeakyBucket(
-			size: 5,
-			refillDelay: 2.0,
-		);
-		$start = microtime(true);
-		for ($i = 1; $i <= 5; $i++) {
-			$bucket->take();
-		}
-		$end = microtime(true);
-		$this->assertLessThan(0.1, $end-$start);
-	}
-
+#[Medium]
+final class LeakyBucketFunctionalTest extends TestCase {
 	public function testPreciseDelayOnRefill(): void {
 		$bucket = new LeakyBucket(
 			size: 5,
@@ -43,23 +21,6 @@ final class BucketTest extends TestCase {
 		$end = microtime(true);
 		$this->assertLessThan(0.5, $end-$start);
 		$this->assertGreaterThanOrEqual(0.4, $end-$start);
-	}
-
-	public function testNoDelayOnFullWithCallback(): void {
-		$bucket = new LeakyBucket(
-			size: 5,
-			refillDelay: 2.0,
-		);
-		$callbacks = 0;
-		$start = microtime(true);
-		for ($i = 1; $i <= 5; $i++) {
-			$bucket->take(callback: function () use (&$callbacks) {
-				$callbacks++;
-			});
-		}
-		$end = microtime(true);
-		$this->assertSame(5, $callbacks);
-		$this->assertLessThan(0.1, $end-$start);
 	}
 
 	public function testPreciseDelayOnRefillWithCallback(): void {

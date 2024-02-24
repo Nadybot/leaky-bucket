@@ -95,6 +95,11 @@ class LeakyBucket {
 				__CLASS__ ."::take(\$amount) needs to be a positive integer."
 			);
 		}
+		if ($amount > $this->size) {
+			throw new InvalidArgumentException(
+				__CLASS__ ."::take(\$amount) cannot be higher than the bucket's size"
+			);
+		}
 		if ($this->fill < $amount) {
 			$this->logger?->debug("Client wants {amount}, bucket has {fill}/{size}, waiting for refill", [
 				"amount" => $amount,
