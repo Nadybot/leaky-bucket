@@ -13,7 +13,7 @@
     "require": {
         "php": ">=8.1.17",
         "revolt/event-loop": "^1.0",
-        "psr/log": "^3.0"
+        "psr/log": "^1|^2|^3"
     },
     "autoload": {
         "psr-4": {
@@ -22,9 +22,9 @@
         }
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.49",
+        "composer-phar/php-cs-fixer": "^3.51.0",
         "squizlabs/php_codesniffer": "^3.8",
-        "phpstan/phpstan": "^1.10",
+        "composer-phar/phpstan": "^1.10",
         "thecodingmachine/phpstan-safe-rule": "^1.2",
         "phpunit/phpunit": "^10.0"
     },
