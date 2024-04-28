@@ -26,14 +26,15 @@
         "squizlabs/php_codesniffer": "^3.8",
         "composer-phar/phpstan": "^1.10",
         "thecodingmachine/phpstan-safe-rule": "^1.2",
-        "phpunit/phpunit": "^10.0"
+        "phpunit/phpunit": "^10.0",
+        "nadybot/nadystyle": "^1.0"
     },
     "license": ["AGPL-3.0-or-later"],
     "scripts": {
       "tests": [
         "phpunit -c phpunit.xml --testdox --no-progress --colors=never",
         "phpstan analyse --memory-limit 512M --no-ansi -cphpstan.neon --error-format=github --no-progress",
-        "phpcs --no-colors --standard=style/Nadybot/ruleset.xml src"
+        "phpcs --no-colors src"
       ]
     }
 }

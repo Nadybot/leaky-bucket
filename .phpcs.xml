@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="NadybotCustom" xsi:noNamespaceSchemaLocation="../../../phpcs.xsd">
+    <description>The custom Nadybot coding standard.</description>
+    <rule ref="vendor/nadybot/nadystyle/style/Nadybot/ruleset.xml" />
+    <rule ref="Nadybot.Files.TypeNameMatchesFileName">
+        <properties>
+            <property name="rootNamespaces" type="array">
+                <element key="src" value="Nadylib\LeakyBucket"/>
+                <element key="tests" value="Nadylib\LeakyBucket\Tests"/>
+            </property>
+            <property name="skipDirs" type="array">
+                <element value="vendor"/>
+            </property>
+        </properties>
+    </rule>
+</ruleset>
